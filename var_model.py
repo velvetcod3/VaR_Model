@@ -5,14 +5,14 @@ import matplotlib.pyplot as plt
 import time
 import random
 
-# Choice of 13 stock tickers selected, excluding JUMIA and MELI
+# Choice of 13 stock tickers selected, excluding JUMIA and MELI and ABBV
 
-tickers = ['MSFT', '0700.HK', 'ABBV', 'MRK', 'NESN.SW', 'ULVR.L', 'DBK.DE', 'C', 'SHEL.L', '8058.T', 'CAT',]
+tickers = ['MSFT', '0700.HK', 'MRK', 'NESN.SW', 'ULVR.L', 'DBK.DE', 'C', 'SHEL.L', '8058.T', 'CAT',]
 
 # Tickers based on the following criteria filters 
 max_beta = 1.5 
 max_sector_weight = 0.35 
-max_pe_ratio = 30
+max_pe_ratio = 40
 
 
 market_caps = {}
@@ -41,6 +41,7 @@ for ticker in tickers:
         pe_ratio = market_data.get('trailingPE', None)
         sector = market_data.get('sector', 'Unknown')
         
+
         # Error handling: Ensure data is present before applying criteria
         if market_cap is None or beta is None or pe_ratio is None:
             print(f"Missing data for {ticker}, skipping...")
@@ -64,7 +65,7 @@ for ticker in tickers:
                 print(f"Error downloading historical data for {ticker}: {e}")
          
     
-#skipping the JUMIA (due to negative P/E) and MELI (missing data)
+#skipping the JUMIA (due to negative P/E) and MELI (missing data) and ABBV (P/E Ratio too high)
 
 
     except Exception as e:
@@ -78,3 +79,17 @@ print(historical_data)
 # Print the skipped stocks
 print("\nSkipped Stocks:")
 print(skipped_stocks)
+
+total_market_cap = sum([market_data['marketCap'] for market_data in filtered_stocks])
+weights = [stock['marketCap'] / total_market_cap for stock in filtered_stocks]
+
+# --- Portfolio Returns Calculation ---
+
+# Calculate daily returns for each stock
+stock_returns = historical_data.pct_change().dropna()
+
+# Calculate total market cap for weighted returns
+total_market_cap = sum([stock['marketCap'] for stock in filtered_stocks])
+
+# Calculate weights based on market cap
+weights = np.array([stock['marketCap'] / total_market_cap for stock in filtered_stocks])
