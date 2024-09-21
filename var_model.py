@@ -17,22 +17,4 @@ market_caps = {}
 filtered_stocks = []
 sector_weights = {}
 
-# Download market capitalization or historical price data for the tickers
-for ticker in tickers:
-    stock = yf.Ticker(ticker)
-    
-    # Fetch the market cap and store it in the market_caps dictionary
-    market_data = stock.info
-    market_caps[ticker] = market_data.get('marketCap', None)
-    
-# Display market caps
-print(market_caps)
 
-# Calculate total market capitalization
-total_market_cap = sum(market_caps.values())
-
-# Calculate the weights based on market capitalization
-weights = {ticker: market_cap / total_market_cap for ticker, market_cap in market_caps.items()}
-
-# Display portfolio weights
-print(weights)
